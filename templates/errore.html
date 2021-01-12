@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<head>
+    <title>Donation with Amazon</title>
+
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='style.css')}}">
+    
+    <link rel="icon" href="static/DWA_logo.jpg" type="image/icon type">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+
+<h1>
+    Donation with Amazon
+</h1>
+
+<body class="main">
+{% if amazonexception %}
+
+    <p>Si è verificato un problema con i server di Amazon, ci dispiace. <br>Usa <a href={{link}} target="_blank" rel="noopener noreferrer">questo link</a> per accedere ad Amazon e sostenere {{tag}}</p>
+
+{% else %}
+
+    <p>Si è verificato un errore inaspettato. Se non hai inserito un link di Amazon.it ti prego di riprovare facendo attenzione.</p>
+    <br>
+    <form method='GET' action='/'>
+        <button type='submit' class='pure-button pure-button-primary'>Effettua un nuovo ordine</button>
+    </form>
+
+{% endif %}
+</body>
+<footer>
+    <p>Supporta il codice del sito su <a href="https://github.com/barbax7/Donation-with-Amazon" target="_blank" rel="nooper noreferrer">GitHub</a> </p>
+</footer>

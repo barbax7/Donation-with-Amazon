@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<head>
+    <title>Donation with Amazon</title>
+
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='style.css')}}">
+    
+    <link rel="icon" href="static/DWA_logo.jpg" type="image/icon type">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+
+<h1>
+    Donation with Amazon
+</h1>
+
+<body class="main">
+    
+<div>
+{% if form %}
+    <p>
+        <br><br><br><br>
+        Benvenuto!<br><br>Effettuando acquisti su Amazon da questo sito, riceverò una commissione che sarà totalmente devoluta alla fondazione Onlus da te scelta!
+    </p>
+    <form class="pure-form" method="POST" action="/">
+        <p>Incolla il link al prodotto Amazon nel box</p>
+        <input type="text" name="input" class="pure-input-1-2" placeholder="Amazon link"><br><br>
+        <button type="submit" class="pure-button pure-button-primary" formaction="/unicef">Unicef</button>
+        <button type="submit" class="pure-button pure-button-primary" formaction='/savethechildren'>Save the Children</button>
+        <button type="submit" class="pure-button pure-button-primary" formaction='/caritas'>Caritas</button>
+        <button type="submit" class="pure-button pure-button-primary" formaction='/bancoalimentare'>Banco alimentare</button>
+        <button type="submit" class="pure-button pure-button-primary" formaction='/telethon'>Telethon</button>
+    </form>
+        <br><br><br><br>
+    <p>Siamo anche su Telegram, al link: <a href=http://t.me/donamazonbot>@donamazonbot</a></p>
+{% endif %}
+</div>
+
+{% if link and onlus %}
+
+    <p>Effettuando l'ordine dal seguente link sosterrai: {{onlus}} </p>
+    <a href={{link}} target="_blank" rel="noopener noreferrer">Link Amazon referenziato</a> <br><br><br>
+    <form method='GET' action='/'>
+        <button type='submit' class='pure-button pure-button-primary'>Effettua un nuovo ordine</button>
+    </form>
+{% endif %}
+
+<div>
+    <br><br><br><br><br>
+    <p font-size=10>
+        Salva questo sito tra i preferiti per averlo sempre a portata di mano!
+    </p>
+</div>
+
+    
+</body>
+<footer>
+    <p>Supporta il codice del sito su <a href="https://github.com/barbax7/Donation-with-Amazon" target="_blank" rel="nooper noreferrer">GitHub</a> </p>
+</footer>
