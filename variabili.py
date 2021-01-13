@@ -1,0 +1,1 @@
+#Qui sono presenti alcune variabili, come i tag partner id. Non ho voluto salvarli tra le variabili d'ambiente

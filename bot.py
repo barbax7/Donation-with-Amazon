@@ -14,7 +14,6 @@ from telebot import types
 
 token=os.environ['BOT_TOKEN'] #token bot telegram
 bot = telebot.AsyncTeleBot(token)
-me=int #userid contatto telegram
 app = Flask(__name__)
 
 #TODO: Funzione per salvare tutti i messaggi in database
@@ -302,7 +301,7 @@ def ref_link(message):
             product=amazon.get_product(link)
             text=f'***{product.title}***\n\n{product.url}\n\n€ {product.prices.price.value}\n\nEffettuando l\'acquisto da questo link sosterrai: {lista[indice]}'
             bot.send_photo(message.chat.id,product.images.large,text, parse_mode='Markdown').wait()
-        except AmazonException:
+        except AmazonException as e:
             bot.send_message(message.chat.id, f'C\'è stato un problema con i server di Amazon. Usa questo link per accedere ad Amazon e sostenere {lista[indice]}\n{link_dict[indice]}').wait()
             bot.send_message(me, f'Errore dopo l\'invio di un link.\n\n{e}n\nLink normale: {message.text}\n\nUtente: {message.chat.id}\n\nAmazonException').wait()
         except Exception as e:
@@ -351,9 +350,10 @@ def ref_short_link(message):
         bot.send_message(message.chat.id,'Non sei registrato, manda /start per avviare la registrazione.').wait()
 
 if __name__ == "__main__":
-    import dizionari  # Dizionari con i partner tag e i link brevi
-    tag=dizionari.tag #Partner tag creati con Amazon Associates
-    link_dict=dizionari.link_dict #Link refereniati alla homepage di Amazon creati con SiteStripe
+    import variabili  # Dizionari con i partner tag e i link brevi
+    tag=variabili.tag #Partner tag creati con Amazon Associates
+    link_dict=variabili.link_dict #Link refereniati alla homepage di Amazon creati con SiteStripe
+    me=variabili.me #Userid del contatto Telegram
     clean_db_weblog()
     bot.remove_webhook()
     time.sleep(1)
