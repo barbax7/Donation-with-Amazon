@@ -1,3 +1,4 @@
 .vscode/settings.json
 __pycache__/bot.cpython-39.pyc
-Procfile
+dizionari.py
+scrivi_utente.py

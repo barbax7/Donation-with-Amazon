@@ -1,11 +1,18 @@
-import telebot, os, psycopg2, random, requests, time
-from flask import Flask, request, render_template
-from amazon.paapi import AmazonAPI
-from telebot import types
+import os
+import random
+import time
+
+import psycopg2
+import requests
+import telebot
 from amazon.exception import AmazonException
+from amazon.paapi import AmazonAPI
+from flask import Flask, render_template, request
+from telebot import types
+
 '''Sito: http://www.donationwithamazon.it'''
 
-token='' #token bot telegram
+token=os.environ['BOT_TOKEN'] #token bot telegram
 bot = telebot.AsyncTeleBot(token)
 me=int #userid contatto telegram
 app = Flask(__name__)
@@ -14,14 +21,14 @@ app = Flask(__name__)
 #TODO: Pulire tutte le funzioni db
 
 def conn_amzn(tag):
-    key =''
-    secret = ''
+    key =os.environ['AMAZON_KEY']
+    secret =os.environ['AMAZON_SECRET']
     amazon = AmazonAPI(key, secret, tag, 'IT')
     return amazon
 
 #Connessione al database PostgreSQL
 def conn_db():
-    conn = psycopg2.connect(host='', user='', password='', database='', port='5432')
+    conn = psycopg2.connect(os.environ['DATABASE_URL'],sslmode='require')
     return conn
 
 def onlus(userid):
@@ -266,7 +273,6 @@ def send_welcome(message):
     if found==False:
         cur.execute(f"INSERT INTO utenti (userid,tag) VALUES ({message.chat.id},1)")
         conn.commit()
-        # set_lang(message.chat.id)
         bot.send_message(message.chat.id,f'Benvenuto {message.from_user.first_name}!\n\nSono contento che hai deciso di utilizzare me per i tuoi acquisti. 😍\nOgni ricavato dalle commissioni pubblicitare verrà devoluto in donazione alla fondazione ONLUS che tu sceglierai.\nProcediamo quindi con la registrazione. 👇🏻').wait()
         select_tag(message.chat.id)
         cur.close()
@@ -330,12 +336,8 @@ def ref_short_link(message):
             indice=random.randint(0,len(lista)-1)
             amazon=conn_amzn(tag[lista[indice]])
             product=amazon.get_product(url)
-            # lang=select_lang(message.chat.id)
-            # if lang=='Ita':
             bot.send_chat_action(message.chat.id,'Sto inviando un link...')
             text=f'***{product.title}***\n\n{product.url}\n\n€ {product.prices.price.value}\n\nEffettuando l\'acquisto da questo link sosterrai: {lista[indice]}'
-            # elif lang=='Eng':
-                # text=f'***{product.title}***\n\n{product.url}\n\n€ {product.prices.price.value}\n\nEffettuando l\'acquisto da questo link sosterrai: {lista[indice]}'
             bot.send_photo(message.chat.id,product.images.large,text, parse_mode='Markdown').wait()
         except AmazonException:
             bot.send_message(message.chat.id, f'C\'è stato un problema con i server di Amazon. Usa questo link per accedere ad Amazon e sostenere {lista[indice]}\n{link_dict[indice]}').wait()
@@ -349,12 +351,13 @@ def ref_short_link(message):
         bot.send_message(message.chat.id,'Non sei registrato, manda /start per avviare la registrazione.').wait()
 
 if __name__ == "__main__":
-    tag={'Unicef':'','Save the Children':'','Caritas':'','Banco alimentare':'','Telethon':''} #Partner tag creati con Amazon Associates
-    link_dict={'Unicef':'https://amzn.to/3qaFQUz','Save the Children':'https://amzn.to/3sfUiwi','Caritas':'https://amzn.to/3nDoRsi','Banco alimentare':'https://amzn.to/2MYUPmc','Telethon':'https://amzn.to/35CzG7U'} #Link refereniati alla homepage di Amazon creati con SiteStripe
+    import dizionari  # Dizionari con i partner tag e i link brevi
+    tag=dizionari.tag #Partner tag creati con Amazon Associates
+    link_dict=dizionari.link_dict #Link refereniati alla homepage di Amazon creati con SiteStripe
     clean_db_weblog()
     bot.remove_webhook()
     time.sleep(1)
-    heroku='' #Link su cui si trova la webapp
+    heroku=os.environ['HEROKU_LINK'] #Link su cui si trova la webapp
     bot.set_webhook(url=heroku + token)
     app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
     
